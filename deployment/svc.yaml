@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: bex-nodes
+  namespace: bex
+spec:
+  clusterIP: None
+  selector:
+    app: bex
+  ports:
+    - name: gossip
+      port: 45892
+      protocol: UDP
+      

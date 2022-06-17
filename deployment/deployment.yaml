@@ -1,0 +1,45 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: bex
+  namespace: bex
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: bex
+  template:
+    metadata:
+      labels:
+        app: bex
+    spec:
+      containers:
+      - name: bex
+        image: registry.digitalocean.com/bgroupe/obey:bex.2
+        ports:
+         - name: http
+           containerPort: 4000
+         - name: gossip
+           containerPort: 45892
+        env:
+        - name: PORT
+          value: "4000"
+        - name: PHOENIX_CHAT_HOST
+          value: "localhost"
+        - name: ERLANG_COOKIE
+          value: "dev-secret"
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        command: ["elixir"]
+        args: [
+          "--name", 
+          "bex@${MY_POD_IP}", 
+          "--cookie", 
+          "${ERLANG_COOKIE}", 
+          "--no-halt", 
+          "-S",
+          "mix",
+          "phx.server"
+        ]
